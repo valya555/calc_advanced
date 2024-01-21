@@ -1,3 +1,5 @@
+import math
+
 import BinaryTree
 
 operators_dict = {
@@ -94,7 +96,7 @@ def build_expression_tree(expTree: BinaryTree) -> BinaryTree:
                 expTree.set_node(operator)
                 expTree.set_left(BinaryTree.Tree(left_exp))
                 build_expression_tree(expTree.get_left())
-            elif get_dict_val(operator)[1] == 'l':
+            elif get_dict_val(operator)[1] == 'l' or left_exp =='U':
                 expTree.set_node(operator)
                 expTree.set_right(BinaryTree.Tree(right_exp))
                 build_expression_tree(expTree.get_right())
@@ -120,7 +122,7 @@ def is_opr(expression: str) -> bool:
 def check_two_opr(opr1: str, opr2: str) -> bool:
     dir1 = get_dict_val(opr1)[1]
     dir2 = get_dict_val(opr2)[1]
-    if dir1 == 'm' and dir2 == 'm' and dir2 != '-':
+    if dir1 == 'm' and dir2 == 'm' and opr2 != '-':
         return False
     if dir1 == 'r' and dir2 == 'l':
         return False
@@ -130,7 +132,7 @@ def check_two_opr(opr1: str, opr2: str) -> bool:
         return False
     if dir1 == 'm' and dir2 == 'r':
         return False
-    if dir1 == 'l' and dir2 == 'm' and dir2 != '-':
+    if dir1 == 'l' and dir2 == 'm' and opr2 != '-':
         return False
     return True
 
@@ -140,42 +142,23 @@ def check_order(expression: str) -> bool:
         if expression[0] not in ['-', '~']:
             return False
         else:
-            for ch in expression:
-                if not is_op(ch):
+            for ch in expression[1:len(expression)]:
+                if not is_op(ch) and ch != '(':
                     if ch != '-':
                         return False
                 else:
                     break
+
     if is_opr(expression[len(expression)-1]):
         if expression[len(expression)-1] not in ['!', '#']:
             return False
 
-    for i in range(0, len(expression)-2):
+    for i in range(1, len(expression)-2):
         first_ch = expression[i]
         second_ch = expression[i+1]
 
         if is_opr(first_ch) and is_opr(second_ch):
-            first_dict = get_dict_val(first_ch)
-            second_dict = get_dict_val(second_ch)
-            if second_dict[1] == '-' or first_dict[1] == '-' and second_dict[1] == '-':
-                i += 1
-            elif first_dict[1] == second_dict[1] or first_dict[1] == 'm' or second_dict[1] == 'm':
-                i += 1
-            elif first_dict[1] == 'm' and second_dict[1] == 'm':
-                return False
-
-        if is_opr(first_ch) and is_op(second_ch):
-            first_dict = get_dict_val(first_ch)
-            if first_dict[1] == 'r' or first_ch == '-':
-                continue
-            else:
-                return False
-
-        if is_op(first_ch) and is_opr(second_ch):
-            first_dict = get_dict_val(first_ch)
-            if first_dict[1] == 'l':
-                continue
-            else:
+            if check_two_opr(first_ch, second_ch) is False:
                 return False
 
 
@@ -209,6 +192,9 @@ def slice_equ(equation: str) -> tuple:
         if first_opr == '0':
             print("invalid expression : invalid brackets")
             return 0, 0, '0'
+        elif first_opr == '-' and is_opr(equation[index-1]):
+            equ2 = equation[1:len(equation)]
+            equ1 = "U"
         elif get_dict_val(first_opr)[1] == 'm':
             equ1 = equation[0:index]
             equ2 = equation[index+1:len(equation)]
@@ -216,8 +202,8 @@ def slice_equ(equation: str) -> tuple:
         elif get_dict_val(first_opr)[1] == 'r':
             equ1 = equation[0:index]
             equ2 = "U"
-        elif get_dict_val(first_opr)[1] == 'r':
-            equ2 = equation[0:index]
+        elif get_dict_val(first_opr)[1] == 'l':
+            equ2 = equation[1:len(equation)]
             equ1 = "U"
         return equ1, equ2, first_opr
 
@@ -226,11 +212,8 @@ def adjust_brackets(equ: str):
     flag = True
     try:
         while equ[0] == '(' and equ[len(equ) - 1] == ')' and flag:
-            if equ.index(')') != len(equ) - 1:
-                flag = False
-            else:
-                equ = equ[1:len(equ)-1]
-                print(" new equ : ", equ)
+            equ = equ[1:len(equ)-1]
+            print(" new equ : ", equ)
     except IndexError:
         return equ
 
@@ -249,7 +232,7 @@ def check_minus(exp: str) -> int:
 
 
 def check_neg_num(exp: str) -> bool:
-    if exp[0] == '-':
+    if exp[0] == '-' and exp[1] != '(':
         flag = True
         i = 0
         while flag:
@@ -266,10 +249,102 @@ def check_neg_num(exp: str) -> bool:
             return True
     return False
 
+
+def sub(op1, op2):
+    return op1 - op2
+
+def add(op1, op2):
+    return op1 + op2
+
+def mul(op1, op2):
+    return op1 * op2
+
+def div(op1, op2):
+    if op2 == 0:
+        return None
+    return op1 / op2
+
+def tilda(op1):
+    return 0 - op1
+
+def pow(op1, op2):
+    return math.pow(op1, op2)
+
+def avg(op1, op2):
+    return (op1 + op2) / 2
+
+def maxi(op1, op2):
+    return op1 if op1 > op2 else op2
+
+def mini(op1, op2):
+    return op1 if op1 < op2 else op2
+
+def minus_unary(op1):
+    return 0 - op1
+
+def modulu(op1, op2):
+    return op1 % op2
+
+def factorial(op1):
+    result = 1
+    if op1 > 0:
+        for i in range(1,op1 + 1):
+            result *= i
+        return result
+
+def sum_digits(op1):
+    total = 0
+    while op1 != 0:
+        total += op1 % 10
+        op1 /= 10
+    return total
+
+
+def calculate(expression: BinaryTree) -> float:
+
+    if not expression:
+        return 0
+
+    if not expression.get_left() and not expression.get_right():
+        return expression.get_data()
+
+    right_expression = calculate(expression.get_right())
+    left_expression = calculate(expression.get_left())
+
+    operator = expression.get_data()
+    if operator == '-' and not expression.get_left():
+        return minus_unary(right_expression)
+    elif operator == '-' and expression.get_left():
+        return sub(left_expression, right_expression)
+    elif operator == '+':
+        return add(left_expression, right_expression)
+    elif operator == '*':
+        return mul(left_expression, right_expression)
+    elif operator == '/':
+        return div(left_expression, right_expression)
+    elif operator == '%':
+        return modulu(left_expression, right_expression)
+    elif operator == '&':
+        return mini(left_expression, right_expression)
+    elif operator == '$':
+        return maxi(left_expression, right_expression)
+    elif operator == '~':
+        return tilda(right_expression)
+    elif operator == '!':
+        return factorial(left_expression)
+    elif operator == '#':
+        return sum_digits(left_expression)
+    elif operator == '@':
+        return avg(left_expression, right_expression)
+    elif operator == '^':
+        return pow(left_expression, right_expression)
+
+
 def main():
     expression = input("please insert mathematical expression")
     ExpT = BinaryTree.Tree(expression)
     build_expression_tree(ExpT)
+    print(calculate(ExpT))
     print("exp tree \n\n\n")
     ExpT.PrintTree()
 

@@ -25,6 +25,7 @@ class Tree:
         else:
             self.data = data
 
+
     def set_right(self, data):
         self.right = Tree(data)
 
