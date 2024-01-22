@@ -1,8 +1,6 @@
-import math
 import BinaryTree
 import helpersFunc as helper
-import validity as valid
-import operations as do
+import ErrorsCalc
 
 
 def build_expression_tree(expTree: BinaryTree) -> BinaryTree:
@@ -11,7 +9,7 @@ def build_expression_tree(expTree: BinaryTree) -> BinaryTree:
     :param expTree: BinaryTree
     :return: expression Binary Tree
     '''
-    if helper.is_operand(repr(expTree)) or repr(expTree) == " ":
+    if helper.is_operand(repr(expTree)) or repr(expTree) == " " or helper.is_float(repr(expTree)):
         expTree.set_node(repr(expTree))
     else:
         left_exp, right_exp, operator = divide_expression(repr(expTree))
@@ -32,7 +30,7 @@ def build_expression_tree(expTree: BinaryTree) -> BinaryTree:
                 build_expression_tree(expTree.get_right())
         else:
             print("error : invalid expression.")
-            return
+            raise ErrorsCalc.InputError
 
 
 
