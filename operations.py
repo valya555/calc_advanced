@@ -38,9 +38,11 @@ def modulu(op1, op2):
 def factorial(op1):
     result = 1
     if op1 > 0:
-        for i in range(1,int(op1) + 1):
-            result *= i
-        return result
+        for i in range(1, int(op1) + 1):
+            if result == float("inf"):
+                return float("inf")
+            result *= float(i)
+    return result
 
 def sum_digits(op1):
     op1 = str(op1)

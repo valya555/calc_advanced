@@ -2,10 +2,12 @@ import operations as do
 import BinaryTree
 
 def calculate(expression: BinaryTree) -> float:
+    if not expression:
+        return
     if repr(expression) == " ":
         return 0
     if repr(expression).isnumeric():
-        data = int(expression.get_data())
+        data = float(expression.get_data())
         return data
 
     if expression.get_right():
@@ -14,6 +16,7 @@ def calculate(expression: BinaryTree) -> float:
         left_expression = calculate(expression.get_left())
 
     operator = repr(expression)
+
     if operator == '-':
         return do.sub(left_expression, right_expression)
     elif operator == '+':
@@ -39,3 +42,5 @@ def calculate(expression: BinaryTree) -> float:
     elif operator == '^':
         return do.power(left_expression, right_expression)
 
+
+    return repr(expression)
