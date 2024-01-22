@@ -3,7 +3,7 @@ import BinaryTree
 import helpersFunc as helper
 import validity as valid
 import build_tree
-
+from ErrorsCalc import InputError, FloatError
 #operators_dict = helper.operators_dictionary()
 
 
@@ -18,28 +18,62 @@ def check_input(expression: str) -> bool:
     print(valid.check_validity(expression))
     print(valid.check_order(expression))
     print(helper.lowest_priority(expression)[0])
-    if valid.check_validity(expression) and valid.check_order(expression) and helper.lowest_priority(expression)[0] != '0':
+    if (valid.check_validity(expression) and valid.check_order(expression) and
+            valid.check_dots(expression) and helper.lowest_priority(expression)[0] != '0'):
         return True
-    return False
+    raise InputError
 
+def menu():
+    print("+ : addition\t\t"
+          "- : subtraction / negative\t\t"
+          "* : multiplication\n"
+          "/ : divination\t\t"
+          "% : remainder / modulu\t\t"
+          "^ : power \n"
+          "@ : average \t\t"
+          "$ : maximum \t\t"
+          "& : minimum \n"
+          " ~ : negative\t\t"
+          " ! : factorial \t\t"
+          " # : sum of digits \n")
 
 def main():
-    expression_input = input(" insert mathematical expression : \t")
-    expression_input = expression_input.replace(" ", "")
-    validity_flag = check_input(expression_input)
-    if validity_flag is False:
-        print("invalid input")
-        return
+    flag = True
+    print("_____________________________________________________")
+    print("\n welcome to the advanced calculator ! ~~ ")
+    print("\n ____________________________________________________")
+    while flag:
+        try:
+            menu()
+            expression_input = input(" insert mathematical expression, to see menu write m : \t")
+            expression_input = expression_input.replace(" ", "")
+            check_input(expression_input)
 
-    expression_tree = BinaryTree.Tree(expression_input)
-    build_tree.build_expression_tree(expression_tree)
+            expression_tree = BinaryTree.Tree(expression_input)
+            build_tree.build_expression_tree(expression_tree)
 
-    if expression_tree is None:
-        print("error building tree")
-        return
+            expression_tree.PrintTree()
+            print(calculation.calculate(expression_tree))
 
-    expression_tree.PrintTree()
-    print(calculation.calculate(expression_tree))
+        except ZeroDivisionError as ZDError:
+            print(ZDError)
+            print("invalid calculation. please re-enter the expression or choose x to exit.")
+        except ArithmeticError as AError:
+            print(AError)
+            print("invalid calculation. please re-enter the expression or choose x to exit.")
+        except InputError as IError:
+            print(IError)
+            print("invalid expression. please re-enter the expression or choose x to exit.")
+        except TypeError as ErrorT:
+            print(ErrorT)
+            print("invalid expression. please re-enter the expression or choose x to exit.")
+        except IndexError as IError:
+            if flag:
+                print(IError)
+                print("invalid input.")
+        except FloatError as FError:
+            print(FError)
+
 
 if __name__ == "__main__":
     main()

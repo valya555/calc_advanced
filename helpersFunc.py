@@ -84,6 +84,11 @@ def lowest_priority(expression: str) -> tuple:
 
 
 def adjust_brackets(expression: str) -> str:
+    '''
+    function adjusts brackets by removing unnecessary brackets
+    :param expression: str
+    :return: adjusted expression
+    '''
     brackets = []
     if expression[0] == '(' and expression[len(expression) - 1] == ')':
         for i in range(1, len(expression) - 1):
@@ -108,3 +113,11 @@ def check_unary_minus(expression: str, index_of_minus: int) -> bool:
     :return: True if unary minus,else False
     '''
     return index_of_minus == 0 or is_operator(expression[index_of_minus - 1])
+
+
+def is_float(expression: str) -> bool:
+    try:
+        float(expression)
+        return True
+    except ValueError:
+        return False

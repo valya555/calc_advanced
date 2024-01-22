@@ -1,48 +1,66 @@
 import math
 
+
 def sub(op1, op2):
     return op1 - op2
+
 
 def add(op1, op2):
     return op1 + op2
 
+
 def mul(op1, op2):
     return op1 * op2
 
+
 def div(op1, op2):
     if op2 == 0:
-        return None
+        raise ZeroDivisionError("attempt to divide by zero")
     return op1 / op2
+
 
 def tilda(op1):
     return 0 - op1
 
+
 def power(op1, op2):
     return math.pow(op1, op2)
+
 
 def avg(op1, op2):
     return (op1 + op2) / 2
 
+
 def maxi(op1, op2):
     return op1 if op1 > op2 else op2
+
 
 def mini(op1, op2):
     return op1 if op1 < op2 else op2
 
+
 def minus_unary(op1):
     return 0 - op1
+
 
 def modulu(op1, op2):
     return op1 % op2
 
+
 def factorial(op1):
     result = 1
+    if op1 < 0:
+        raise ValueError("cant factorial a negative number")
+    if op1 - int(op1) != 0.0:
+        raise ArithmeticError("attempt to factorial an non whole number")
     if op1 > 0:
         for i in range(1, int(op1) + 1):
             if result == float("inf"):
                 return float("inf")
             result *= float(i)
+        return result
     return result
+
 
 def sum_digits(op1):
     op1 = str(op1)
